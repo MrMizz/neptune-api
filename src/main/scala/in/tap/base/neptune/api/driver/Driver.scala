@@ -13,7 +13,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 final case class Driver(ENDPOINT: String) {
 
   /** Graph Traversal Source */
-  lazy val g: GraphTraversalSource = {
+  val g: GraphTraversalSource = {
     traversal().withRemote(DriverRemoteConnection.using(cluster))
   }
 

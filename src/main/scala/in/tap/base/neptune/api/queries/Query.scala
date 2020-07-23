@@ -3,7 +3,8 @@ package in.tap.base.neptune.api.queries
 import in.tap.base.neptune.api.driver.Driver
 import in.tap.base.neptune.api.queries.args.Aggregation
 import in.tap.base.neptune.api.queries.args.Aggregation.{And, Or}
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.{GraphTraversal, GraphTraversalSource}
+import org.apache.tinkerpop.gremlin.structure.Vertex
 
 /**
  * You'll need to instantiate a new [[Query]] for each traversal/request.
@@ -14,12 +15,12 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
  */
 abstract class Query(vertexIds: List[String], aggregation: Aggregation, ENDPOINT: String) {
 
-  protected def singleQuery(vertexId: String)(g: GraphTraversalSource): Set[String]
+  protected def singleQuery(gt: GraphTraversal[Vertex, Vertex]): Set[String]
 
   final def execute(): Option[QueryResponse] = {
     val response: Option[QueryResponse] = {
       val queries: List[Set[String]] = {
-        vertexIds.map(vertexId => singleQuery(vertexId)(g))
+        vertexIds.map(vertexId => singleQuery(graphTraversal(vertexId)))
       }
       val aggregatedQueries: Set[String] = aggregation match {
         case And => queries.reduce(_.intersect(_))
@@ -40,11 +41,15 @@ abstract class Query(vertexIds: List[String], aggregation: Aggregation, ENDPOINT
     response
   }
 
+  final protected def graphTraversal(vertexId: String): GraphTraversal[Vertex, Vertex] = {
+    g.V(vertexId)
+  }
+
   /**
    * In practice, I've found that leaving [[GraphTraversalSource]] open
    * will eventually crash your application, and it's best to close after each request.
    */
-  final private lazy val g: GraphTraversalSource = {
+  final private val g: GraphTraversalSource = {
     Driver(ENDPOINT).g
   }
 

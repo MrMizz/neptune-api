@@ -28,6 +28,7 @@ Here's what has worked for me
 * Your Neptune Cluster sits in a private VPC
     * for dev/test environment, you can publish this application to a small EC2 instance that sits in the same private VPC as your cluster
 * Deploy this application with Lambda, or whatever you prefer, within the same private VPC as your Neptune Cluster
+    * you'll ditch all the Main mumbo jumbo, and build a proper Handler using the InVertices & OutVertices queries
 * Set up your NAT Gateway, Routing tables, and API Gateway, such that your endpoint can talk to the outside world
 * Build a UI or Viz tool
 * Have fun

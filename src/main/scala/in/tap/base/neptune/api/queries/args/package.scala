@@ -29,6 +29,30 @@ package object args {
 
     case object Or extends Aggregation
 
+    def apply(arg: String): Either[IllegalArgumentException, Aggregation] = {
+      arg.toLowerCase match {
+        case "and"          => rightAnd
+        case "intersection" => rightAnd
+        case "a"            => rightAnd
+        case "or"           => rightOr
+        case "union"        => rightOr
+        case "o"            => rightOr
+        case _              => leftException
+      }
+    }
+
+    private lazy val rightAnd: Right[IllegalArgumentException, Aggregation] = {
+      Right(And)
+    }
+
+    private lazy val rightOr: Right[IllegalArgumentException, Aggregation] = {
+      Right(Or)
+    }
+
+    private lazy val leftException: Left[IllegalArgumentException, Aggregation] = {
+      Left(new IllegalArgumentException("Invalid Aggregation Argument!"))
+    }
+
   }
 
 }
